@@ -1,6 +1,8 @@
 ### Pnm
 ###### common pnm file format
 
+Examples: [see here](https://github.com/Manu-sh/example-pnm)
+
 the library was originally written for [this project](https://github.com/Manu-sh/cuda-mandelbrot), i decided to create a separate repository to be able to reuse the code more easily.
 
 Learning resources
