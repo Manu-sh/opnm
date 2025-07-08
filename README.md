@@ -1,5 +1,5 @@
 ### Pnm
-###### common pnm file format
+###### common pnm file formats
 
 Examples: [see here](https://github.com/Manu-sh/example-pnm)
 
