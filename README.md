@@ -1,4 +1,4 @@
-### Pnm
+### Pnm :framed_picture:
 ###### common pnm file formats
 
 Examples: [see here](https://github.com/Manu-sh/example-pnm)
