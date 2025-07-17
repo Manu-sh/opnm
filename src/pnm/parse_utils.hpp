@@ -90,5 +90,8 @@ uint16_t parse_maxvalue_section(std::istream &is) {
     if (!(is >> maxvalue) || !maxvalue || maxvalue == UINT16_MAX) // "The maximum color value (Maxval). Must be less than 65536 and more than zero."
         throw std::runtime_error{"missing or invalid maxvalue"};
 
+    if (maxvalue != 255)
+        throw std::runtime_error{"a maxvalue different than 255 is not currently supported by opnm"};
+
     return maxvalue;
 }
