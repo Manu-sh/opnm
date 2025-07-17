@@ -5,6 +5,7 @@
 #include <optional>
 #include <cctype>
 #include <cstdint>
+#include <utility>
 
 //#include <pnm/Header.hpp>
 
@@ -94,4 +95,37 @@ uint16_t parse_maxvalue_section(std::istream &is) {
         throw std::runtime_error{"a maxvalue different than 255 is not currently supported by opnm"};
 
     return maxvalue;
+}
+
+
+// const auto &[pixmap, garbage] = parse_pbm4_pixmap(fpnm, width, height);
+std::pair<std::string, std::string> parse_pbm4_pixmap(std::istream &is, uint16_t width, uint16_t height) {
+
+    if (!std::isspace(is.peek()))
+        throw std::runtime_error{"Invalid format expected a single whitespace before the raster block begin"};
+
+    is.get();
+
+    // PIXMAP & GARBAGE
+    std::ostringstream oss;
+    oss << is.rdbuf();
+
+    // "You can put any junk you want after the raster, if it starts with a white space character."
+    std::string pixmap_and_garbage{oss.str()};
+    if (pixmap_and_garbage.empty())
+        throw std::runtime_error{"missing pixmap data"};
+
+
+    // "A raster of Height rows, in order from top to bottom. Each row is Width bits, packed 8 to a byte"
+    const uint16_t row_bytes = ceil_div(width, 8);
+
+    uint32_t expected_bsize = row_bytes * height;
+    if (pixmap_and_garbage.size() < expected_bsize)
+        throw std::runtime_error{"Invalid pixmap+garbage size, expected to be at least "s + std::to_string(expected_bsize) + " bytes found " + std::to_string(pixmap_and_garbage.size()) };
+
+    // TODO: tecnicamente in fondo dopo uno spazio bianco ci si può mettere qualunque cosa, ciò vuol dire che bisogna usare substring se > expected_bsize
+    std::string garbage{pixmap_and_garbage.cbegin() + expected_bsize, pixmap_and_garbage.cend()};
+    pixmap_and_garbage.resize(expected_bsize); // remove any garbage data from pixman
+
+    return {pixmap_and_garbage, garbage};
 }

@@ -1,4 +1,5 @@
 #pragma once
+#include <cstdint>
 
 // i could use template specialization and sfinae to force inlining
 // for some of these global function, but it's unnecessarily
@@ -9,3 +10,10 @@
 #endif
 
 #define FORCED(_UNUSED_) __attribute__((always_inline))
+
+
+// same of (int)ceil(x/8.)
+static constexpr FORCED(inline) uint16_t ceil_div(uint16_t num, uint8_t div) {
+    return (num-1) / div + 1;
+}
+
