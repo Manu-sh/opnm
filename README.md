@@ -1,7 +1,14 @@
-### Pnm :framed_picture:
+### Output Pnm :framed_picture:
 ###### common pnm file formats
 
-Examples: [see here](https://github.com/Manu-sh/example-pnm)
+This mini-library is for *__output only__*, actually there is no way to read a file from disk into a PNM format.
+
+#### Future (?)
+- add `PNM<T>(filename)` constructors or a factory method to read files from disk into a `PNM<T>` object
+- add `write_file_content(ostream&)`
+
+
+Examples: [see here](https://github.com/Manu-sh/example-opnm)
 
 the library was originally written for [this project](https://github.com/Manu-sh/cuda-mandelbrot), i decided to create a separate repository to be able to reuse the code more easily.
 
