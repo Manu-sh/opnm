@@ -4,11 +4,10 @@
 #include <istream>
 #include <optional>
 #include <cctype>
+#include <cstdint>
 
 //#include <pnm/Header.hpp>
 
-// return an empty string if there is no comment on the current line
-// "Before the whitespace character that delimits the raster, any characters from a "#" to but not including the next carriage return or newline character, or end of file, is a comment and is ignored.": https://netpbm.sourceforge.net/doc/pbm.html
 std::string read_comment(std::istream &is) {
 
     std::string comment;
@@ -37,7 +36,7 @@ void chomp_comments_and_spaces(std::istream &is) {
 }
 
 
-std::optional<pnm::Format> parse_magic(char magic[2]) {
+std::optional<pnm::Format> magic_to_enum(char magic[2]) {
 
     if (magic[0] != 'P') goto fail;
     switch (magic[1]) {
@@ -51,4 +50,45 @@ std::optional<pnm::Format> parse_magic(char magic[2]) {
 
     fail:
     return std::nullopt;
+}
+
+pnm::Format parse_magic_section(std::istream &is) {
+
+    char format[2]{};
+    if (!is.read(format, sizeof format))
+        throw std::runtime_error{"Missing magic number"};
+
+    std::optional<pnm::Format> magic = magic_to_enum(format);
+    if (!magic) throw std::runtime_error{"Invalid magic"};
+    return magic.value();
+}
+
+
+uint16_t parse_width_section(std::istream &is) {
+
+    uint16_t width;
+    if (!(is >> width))
+        throw std::runtime_error{"missing or invalid width"};
+
+    return width;
+}
+
+
+uint16_t parse_height_section(std::istream &is) {
+
+    uint16_t height;
+    if (!(is >> height))
+        throw std::runtime_error{"missing or invalid height"};
+
+    return height;
+}
+
+// PGM and PPM only
+uint16_t parse_maxvalue_section(std::istream &is) {
+
+    uint16_t maxvalue;
+    if (!(is >> maxvalue) || !maxvalue || maxvalue == UINT16_MAX) // "The maximum color value (Maxval). Must be less than 65536 and more than zero."
+        throw std::runtime_error{"missing or invalid maxvalue"};
+
+    return maxvalue;
 }
