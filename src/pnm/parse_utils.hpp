@@ -88,7 +88,7 @@ uint16_t parse_height_section(std::istream &is) {
 uint16_t parse_maxvalue_section(std::istream &is) {
 
     uint16_t maxvalue;
-    if (!(is >> maxvalue) || !maxvalue || maxvalue == UINT16_MAX) // "The maximum color value (Maxval). Must be less than 65536 and more than zero."
+    if (!(is >> maxvalue) || !maxvalue) // "The maximum color value (Maxval). Must be less than 65536 and more than zero."
         throw std::runtime_error{"missing or invalid maxvalue"};
 
     if (maxvalue != 255)
@@ -97,35 +97,45 @@ uint16_t parse_maxvalue_section(std::istream &is) {
     return maxvalue;
 }
 
+static std::string read_pixmap_blk(std::istream &is, uint32_t expected_bsize) {
 
-// const auto &[pixmap, garbage] = parse_pbm4_pixmap(fpnm, width, height);
-std::pair<std::string, std::string> parse_pbm4_pixmap(std::istream &is, uint16_t width, uint16_t height) {
+    std::string pixmap;
+    pixmap.resize(expected_bsize);
+    is.read(pixmap.data(), expected_bsize);
+    pixmap.resize(is.gcount()); // truncate
+
+    if (pixmap.size() < expected_bsize)
+        throw std::runtime_error{"Invalid pixmap size, expected to be at least "s + std::to_string(expected_bsize) + " bytes, found " + std::to_string(pixmap.size()) };
+
+    return pixmap;
+}
+
+
+
+std::string parse_pbm4_pixmap_section(std::istream &is, uint16_t width, uint16_t height) {
 
     if (!std::isspace(is.peek()))
         throw std::runtime_error{"Invalid format expected a single whitespace before the raster block begin"};
 
     is.get();
 
-    // PIXMAP & GARBAGE
-    std::ostringstream oss;
-    oss << is.rdbuf();
-
-    // "You can put any junk you want after the raster, if it starts with a white space character."
-    std::string pixmap_and_garbage{oss.str()};
-    if (pixmap_and_garbage.empty())
-        throw std::runtime_error{"missing pixmap data"};
-
-
     // "A raster of Height rows, in order from top to bottom. Each row is Width bits, packed 8 to a byte"
     const uint16_t row_bytes = ceil_div(width, 8);
-
     uint32_t expected_bsize = row_bytes * height;
-    if (pixmap_and_garbage.size() < expected_bsize)
-        throw std::runtime_error{"Invalid pixmap+garbage size, expected to be at least "s + std::to_string(expected_bsize) + " bytes found " + std::to_string(pixmap_and_garbage.size()) };
 
-    // TODO: tecnicamente in fondo dopo uno spazio bianco ci si può mettere qualunque cosa, ciò vuol dire che bisogna usare substring se > expected_bsize
-    std::string garbage{pixmap_and_garbage.cbegin() + expected_bsize, pixmap_and_garbage.cend()};
-    pixmap_and_garbage.resize(expected_bsize); // remove any garbage data from pixman
+    return read_pixmap_blk(is, expected_bsize);
+}
 
-    return {pixmap_and_garbage, garbage};
+std::string parse_ppm6_pixmap_section(std::istream &is, uint16_t width, uint16_t height) {
+
+    if (!std::isspace(is.peek()))
+        throw std::runtime_error{"Invalid format expected a single whitespace before the raster block begin"};
+
+    is.get();
+
+    // "Each row consists of Width pixels, in order from left to right. Each pixel is a triplet of red, green, and blue samples, in that order."
+    // "If the Maxval is less than 256, it is 1 byte."
+
+    uint32_t expected_bsize = 3 * width * height; // 3 byte per pixel
+    return read_pixmap_blk(is, expected_bsize);
 }
