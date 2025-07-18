@@ -17,7 +17,7 @@ Learning resources
 - https://en.wikipedia.org/wiki/Netpbm
 - https://netpbm.sourceforge.net/doc/pbm.html
 - https://netpbm.sourceforge.net/doc/pgm.html
-- https://netpbm.sourceforge.net/doc/pbm.html
+- https://netpbm.sourceforge.net/doc/ppm.html
 
 ```cpp
 PNM<pnm::monochrome_t> chessboard{1920, 1080};
