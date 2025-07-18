@@ -139,3 +139,18 @@ std::string parse_ppm6_pixmap_section(std::istream &is, uint16_t width, uint16_t
     uint32_t expected_bsize = 3 * width * height; // 3 byte per pixel
     return read_pixmap_blk(is, expected_bsize);
 }
+
+
+std::string parse_pgm5_pixmap_section(std::istream &is, uint16_t width, uint16_t height) {
+
+    if (!std::isspace(is.peek()))
+        throw std::runtime_error{"Invalid format expected a single whitespace before the raster block begin"};
+
+    is.get();
+
+    // "ach row consists of Width gray values, in order from left to right. Each gray value is a number from 0 through Maxval, with 0 being black and Maxval being white"
+    // "If the Maxval is less than 256, it is 1 byte."
+
+    uint32_t expected_bsize = 1 * width * height; // 1 byte per pixel
+    return read_pixmap_blk(is, expected_bsize);
+}
