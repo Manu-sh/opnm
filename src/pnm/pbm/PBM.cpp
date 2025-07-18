@@ -13,7 +13,18 @@
 
 PNM<pnm::monochrome_t> PNM<pnm::monochrome_t>::parse(std::istream &is) {
 
-    chomp_comments_and_spaces(is);
+    //chomp_comments_and_spaces(is);
+    // avoid touching the stream if no magic number is found
+    if (is.peek() != 'P')
+        throw std::runtime_error{"not a PNM file"};
+
+    auto tmp = is.get();
+    if (is.peek() != '1' && is.peek() != '4') {
+        is.putback(tmp); // put 'P' back into the stream
+        throw std::runtime_error{"not a PBM file"};
+    }
+
+    is.putback(tmp); // put 'P' back into the stream
     const auto &format = parse_magic_section(is);
 
     chomp_comments_and_spaces(is);
