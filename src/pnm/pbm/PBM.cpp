@@ -2,12 +2,39 @@
 #include <pnm/pbm/PBM.hpp>
 #include <pnm/Header.hpp>
 #include <pnm/pnm.hpp>
+#include <pnm/parse_utils.hpp>
 
 #include <cstddef>
 #include <cassert>
 #include <cstring>
 #include <memory>
 #include <new>
+
+
+PNM<pnm::monochrome_t> PNM<pnm::monochrome_t>::parse(std::istream &is) {
+
+    chomp_comments_and_spaces(is);
+    const auto &format = parse_magic_section(is);
+
+    chomp_comments_and_spaces(is);
+    uint16_t width = parse_width_section(is);
+
+    chomp_comments_and_spaces(is);
+    uint16_t height = parse_height_section(is);
+
+    if (!std::isspace(is.peek()))
+        throw std::runtime_error{"Invalid format expected a single whitespace before the raster block begin"};
+
+    is.get();
+
+    switch (format) {
+        case pnm::Format::PBM4: return PNM<pnm::monochrome_t>(width, height, is, false);
+        case pnm::Format::PBM1: return PNM<pnm::monochrome_t>(width, height, is, true);
+        default:; // shut-up warnings
+    }
+
+    throw std::runtime_error{"not a PBM file"};
+}
 
 // technically for ascii format: " No line SHOULD be longer than 70 characters."
 // but i dont care because it doesnt make any sense and the format is parsed correctly
@@ -38,7 +65,7 @@ const PNM<pnm::monochrome_t> & PNM<pnm::monochrome_t>::write_ascii(const char *c
         // copy the line fetching by byte until there is padding
         for (w_byte = 0; w_byte < chunked_width; ++w_byte, ++pr) {
             const BitArray8 bit = *pr; // this skip many checks
-            *p++ = (bit[0] + '0'), *p++ = ' '; // convert o ascii every bit
+            *p++ = (bit[0] + '0'), *p++ = ' '; // convert to ascii every bit
             *p++ = (bit[1] + '0'), *p++ = ' ';
             *p++ = (bit[2] + '0'), *p++ = ' ';
             *p++ = (bit[3] + '0'), *p++ = ' ';
@@ -97,3 +124,4 @@ const PNM<pnm::monochrome_t> & PNM<pnm::monochrome_t>::write_binary(const char *
     auto header = pnm::Header<pnm::Format::PBM4, pnm::BIT_2>{m_width, m_height};
     return ::write_file_content(file_name, header, beg, end), *this;
 }
+

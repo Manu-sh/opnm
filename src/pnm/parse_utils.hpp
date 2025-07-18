@@ -127,20 +127,6 @@ std::vector<uint8_t> parse_pbm4_raster_section(std::istream &is, uint16_t width,
     return read_pixmap_blk(is, expected_bsize);
 }
 
-std::vector<uint8_t> parse_ppm6_raster_section(std::istream &is, uint16_t width, uint16_t height) {
-
-    if (!std::isspace(is.peek()))
-        throw std::runtime_error{"Invalid format expected a single whitespace before the raster block begin"};
-
-    is.get();
-
-    // "Each row consists of Width pixels, in order from left to right. Each pixel is a triplet of red, green, and blue samples, in that order."
-    // "If the Maxval is less than 256, it is 1 byte."
-
-    uint32_t expected_bsize = 3 * width * height; // 3 byte per pixel
-    return read_pixmap_blk(is, expected_bsize);
-}
-
 std::vector<uint8_t> parse_pgm5_raster_section(std::istream &is, uint16_t width, uint16_t height) {
 
     if (!std::isspace(is.peek()))
@@ -152,6 +138,21 @@ std::vector<uint8_t> parse_pgm5_raster_section(std::istream &is, uint16_t width,
     // "If the Maxval is less than 256, it is 1 byte."
 
     uint32_t expected_bsize = 1 * width * height; // 1 byte per pixel
+    return read_pixmap_blk(is, expected_bsize);
+}
+
+
+std::vector<uint8_t> parse_ppm6_raster_section(std::istream &is, uint16_t width, uint16_t height) {
+
+    if (!std::isspace(is.peek()))
+        throw std::runtime_error{"Invalid format expected a single whitespace before the raster block begin"};
+
+    is.get();
+
+    // "Each row consists of Width pixels, in order from left to right. Each pixel is a triplet of red, green, and blue samples, in that order."
+    // "If the Maxval is less than 256, it is 1 byte."
+
+    uint32_t expected_bsize = 3 * width * height; // 3 byte per pixel
     return read_pixmap_blk(is, expected_bsize);
 }
 
