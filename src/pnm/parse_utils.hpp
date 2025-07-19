@@ -1,14 +1,9 @@
 #pragma once
-
 #include <string>
-#include <vector>
 #include <istream>
 #include <optional>
 #include <cctype>
 #include <cstdint>
-#include <utility>
-
-//#include <pnm/Header.hpp>
 
 static std::string read_comment(std::istream &is) {
 
@@ -98,8 +93,9 @@ static uint16_t parse_maxvalue_section(std::istream &is) {
     return maxvalue;
 }
 
-
-static std::vector<uint8_t> read_pixmap_blk(std::istream &is, uint32_t expected_bsize) {
+#if 0
+#include <vector>
+static std::r<uint8_t> read_pixmap_blk(std::istream &is, uint32_t expected_bsize) {
 
     std::vector<uint8_t> pixmap;
     pixmap.resize(expected_bsize);
@@ -199,3 +195,4 @@ static std::vector<uint8_t> parse_ppm3_raster_section(std::istream &is, uint16_t
     is.get();
     return read_ascii_pixmap_values_as_bytes(is, width * height * 3); // 3 values per pixel
 }
+#endif

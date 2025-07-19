@@ -13,6 +13,11 @@ set(SRC_PATH  ${PROJECT_SOURCE_DIR}/src)
 # headers used only by implementation i will change this later
 set(INC_PRIVATE_PATH  ${PROJECT_SOURCE_DIR}/src)
 
+# equivalent of: strip --strip-all
+set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -s")
+add_link_options($<$<CONFIG:RELEASE>:-s>)
+
+
 add_library(${PROJECT_NAME} STATIC
         ${SRC_PATH}/pnm/ppm/PPM.cpp
         ${SRC_PATH}/pnm/pgm/PGM.cpp
@@ -31,6 +36,3 @@ target_compile_options(${PROJECT_NAME}
         -funswitch-loops -ftree-vectorize -fivopts -fmodulo-sched
 )
 
-# CMAKE_CXX_FLAGS_RELEASE == Release ? "-O3 .." : ""
-#target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Release>:-O3 -ffast-math -funroll-loops -march=native>)
-#target_compile_options(${PROJECT_NAME} PRIVATE $<$<CONFIG:Debug>:-O0 -g -DDEBUG>)
