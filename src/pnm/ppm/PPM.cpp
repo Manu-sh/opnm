@@ -14,6 +14,7 @@
 #include <string>
 #include <stdexcept>
 #include <istream>
+#include <ostream>
 
 
 PNM<pnm::rgb<pnm::BIT_8>> PNM<pnm::rgb<pnm::BIT_8>>::parse(std::istream &is) {
@@ -56,7 +57,7 @@ PNM<pnm::rgb<pnm::BIT_8>> PNM<pnm::rgb<pnm::BIT_8>>::parse(std::istream &is) {
 }
 
 
-const PNM<pnm::rgb<pnm::BIT_8>> & PNM<pnm::rgb<pnm::BIT_8>>::write_ascii(const char *const file_name) const {
+const PNM<pnm::rgb<pnm::BIT_8>> & PNM<pnm::rgb<pnm::BIT_8>>::write_ascii(std::ostream &os) const {
 
     if (!m_length) return *this;
 
@@ -80,10 +81,10 @@ const PNM<pnm::rgb<pnm::BIT_8>> & PNM<pnm::rgb<pnm::BIT_8>>::write_ascii(const c
     *p = '\0'; // p is writable here
 
     auto header = pnm::Header<pnm::Format::PPM3, pnm::BIT_8>{m_width, m_height};
-    return ::write_file_content(file_name, header, beg, p), *this;
+    return ::write_content(os, header, beg, p), *this;
 }
 
-const PNM<pnm::rgb<pnm::BIT_8>> & PNM<pnm::rgb<pnm::BIT_8>>::write_binary(const char *const file_name) const {
+const PNM<pnm::rgb<pnm::BIT_8>> & PNM<pnm::rgb<pnm::BIT_8>>::write_binary(std::ostream &os) const {
 
     if (!m_length) return *this;
 
@@ -96,5 +97,5 @@ const PNM<pnm::rgb<pnm::BIT_8>> & PNM<pnm::rgb<pnm::BIT_8>>::write_binary(const 
     //printf("%p -> len in bytes: %zu, bytes: %zu\n", beg, bsize, std::distance(beg, end));
 
     auto header = pnm::Header<pnm::Format::PPM6, pnm::BIT_8>{m_width, m_height};
-    return ::write_file_content(file_name, header, beg, end), *this;
+    return ::write_content(os, header, beg, end), *this;
 }

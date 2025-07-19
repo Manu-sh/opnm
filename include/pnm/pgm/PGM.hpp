@@ -1,7 +1,12 @@
 #pragma once
 #include <cstdint>
 #include <type_traits>
+
 #include <istream>
+#include <ostream>
+#include <fstream>
+#include <ios>
+
 #include <string>
 #include <stdexcept>
 
@@ -36,8 +41,16 @@ struct PNM<pnm::grayscale<pnm::BIT_8>>: private StandardMatrix1D<pnm::grayscale<
     const GrayScale & operator()(uint16_t r, uint16_t c) const noexcept { return StandardMatrix1D::operator()(r, c); }
           GrayScale & operator()(uint16_t r, uint16_t c)       noexcept { return StandardMatrix1D::operator()(r, c); }
 
-    const PNM & write_file_content(const char *const file_name, bool use_ascii_fmt = 0) const {
-        return use_ascii_fmt ? write_ascii(file_name) : write_binary(file_name);
+    const PNM & write_content(std::ostream &os, bool use_ascii_fmt = 0) const {
+        return use_ascii_fmt ? write_ascii(os) : write_binary(os);
+    }
+
+    const PNM & write_file_content(const char *file_name, bool use_ascii_fmt = 0) const {
+        using std::ios_base;
+        std::ofstream fPPM;
+        fPPM.exceptions(ios_base::failbit|ios_base::badbit);
+        fPPM.open(file_name, ios_base::out|ios_base::binary|ios_base::trunc);
+        return write_content(fPPM, use_ascii_fmt);
     }
 
     private:
@@ -64,6 +77,6 @@ struct PNM<pnm::grayscale<pnm::BIT_8>>: private StandardMatrix1D<pnm::grayscale<
         }
 
     protected:
-        const PNM & write_ascii(const char *const file_name) const;
-        const PNM & write_binary(const char *const file_name) const;
+        const PNM & write_ascii(std::ostream &os) const;
+        const PNM & write_binary(std::ostream &os) const;
 };

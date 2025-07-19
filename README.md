@@ -5,12 +5,17 @@ This mini-library is for dealing with common PNM format.
 
 #### Future (?)
 - :white_check_mark: ~~add `PNM<T>(filename)` constructors or a factory method to read files from disk into a `PNM<T>` object~~
-- add `write_file_content(ostream&)`
+- :white_check_mark: ~~add `write_content(ostream&)`~~
 
 
 Examples: [see here](https://github.com/Manu-sh/example-opnm)
 
-the library was originally written for [this project](https://github.com/Manu-sh/cuda-mandelbrot), i decided to create a separate repository to be able to reuse the code more easily.
+The library was originally written for [this project](https://github.com/Manu-sh/cuda-mandelbrot), i decided to create a separate repository to be able to reuse the code more easily. 
+
+There is duplicate code and the reason is that originally it was supposed to be only extremely efficient in creating and writing a pbm rgb type file only later it was expanded to include pbm and pgm, the correct approach would have been to avoid any kind of static polymorphism (template) and to use dynamic polymorphism (interfaces, vtable etc) and class inheritance. 
+
+The in-memory representation of PNM<T> files is always binary, and include a padding when required by the format, see pbm. The raster data (aka pixmap) of an image w=3 h=2 in pbm format will occupy 2 bytes in memory. Any conversion to ascii occurs later when write_content() is called.
+
 
 Learning resources
 

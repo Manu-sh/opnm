@@ -58,7 +58,7 @@ PNM<pnm::grayscale<pnm::BIT_8>> PNM<pnm::grayscale<pnm::BIT_8>>::parse(std::istr
 
 
 
-const PNM<pnm::grayscale<pnm::BIT_8>> & PNM<pnm::grayscale<pnm::BIT_8>>::write_ascii(const char *const file_name) const {
+const PNM<pnm::grayscale<pnm::BIT_8>> & PNM<pnm::grayscale<pnm::BIT_8>>::write_ascii(std::ostream &os) const {
 
     if (!m_length) return *this;
 
@@ -78,10 +78,10 @@ const PNM<pnm::grayscale<pnm::BIT_8>> & PNM<pnm::grayscale<pnm::BIT_8>>::write_a
     *p = '\0'; // p is writable here
 
     auto header = pnm::Header<pnm::Format::PGM2, pnm::BIT_8>{m_width, m_height};
-    return ::write_file_content(file_name, header, beg, end), *this;
+    return ::write_content(os, header, beg, end), *this;
 }
 
-const PNM<pnm::grayscale<pnm::BIT_8>> & PNM<pnm::grayscale<pnm::BIT_8>>::write_binary(const char *const file_name) const {
+const PNM<pnm::grayscale<pnm::BIT_8>> & PNM<pnm::grayscale<pnm::BIT_8>>::write_binary(std::ostream &os) const {
 
     if (!m_length) return *this;
 
@@ -93,5 +93,5 @@ const PNM<pnm::grayscale<pnm::BIT_8>> & PNM<pnm::grayscale<pnm::BIT_8>>::write_b
     assert((size_t)std::distance(beg, end) <= bsize);
 
     auto header = pnm::Header<pnm::Format::PGM5, pnm::BIT_8>{m_width, m_height};
-    return ::write_file_content(file_name, header, beg, end), *this;
+    return ::write_content(os, header, beg, end), *this;
 }

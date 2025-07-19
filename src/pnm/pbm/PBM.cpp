@@ -53,7 +53,7 @@ PNM<pnm::monochrome_t> PNM<pnm::monochrome_t>::parse(std::istream &is) {
 
 // technically for ascii format: " No line SHOULD be longer than 70 characters."
 // but i dont care because it doesnt make any sense and the format is parsed correctly
-const PNM<pnm::monochrome_t> & PNM<pnm::monochrome_t>::write_ascii(const char *const file_name) const {
+const PNM<pnm::monochrome_t> & PNM<pnm::monochrome_t>::write_ascii(std::ostream &os) const {
 
     static_assert(sizeof(BitArray8) == 1, "ooops");
 
@@ -125,10 +125,10 @@ const PNM<pnm::monochrome_t> & PNM<pnm::monochrome_t>::write_ascii(const char *c
     *p = '\0'; // p is writable here
 
     auto header = pnm::Header<pnm::Format::PBM1, pnm::BIT_2>{m_width, m_height};
-    return ::write_file_content(file_name, header, beg, end), *this;
+    return ::write_content(os, header, beg, end), *this;
 }
 
-const PNM<pnm::monochrome_t> & PNM<pnm::monochrome_t>::write_binary(const char *const file_name) const {
+const PNM<pnm::monochrome_t> & PNM<pnm::monochrome_t>::write_binary(std::ostream &os) const {
 
     if (!m_length) return *this;
 
@@ -137,5 +137,5 @@ const PNM<pnm::monochrome_t> & PNM<pnm::monochrome_t>::write_binary(const char *
     assert((size_t)std::distance(beg, end) <= this->m_length);
 
     auto header = pnm::Header<pnm::Format::PBM4, pnm::BIT_2>{m_width, m_height};
-    return ::write_file_content(file_name, header, beg, end), *this;
+    return ::write_content(os, header, beg, end), *this;
 }

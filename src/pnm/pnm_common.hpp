@@ -2,15 +2,11 @@
 #include <string>
 #include <cstdint>
 #include <fstream>
+#include <ostream>
 
-
-static void write_file_content(const char *const file_name, const std::string &hdr, const uint8_t *const body_beg, const uint8_t *const body_end) {
-    using std::ios_base;
-    std::ofstream fPPM;
-    fPPM.exceptions(ios_base::failbit|ios_base::badbit);
-    fPPM.open(file_name, ios_base::out|ios_base::binary|ios_base::trunc);
-    fPPM.write(hdr.data(), hdr.length());
-    fPPM.write((char *)body_beg, std::distance(body_beg, body_end));
+static void write_content(std::ostream &os, const std::string &hdr, const uint8_t *const body_beg, const uint8_t *const body_end) {
+    os.write(hdr.data(), hdr.length());
+    os.write((char *)body_beg, std::distance(body_beg, body_end));
 }
 
 // map a channel value 2 ascii

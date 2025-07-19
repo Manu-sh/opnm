@@ -9,7 +9,12 @@
 #include <pnm/matrix/BitMatrix1D.hpp>
 
 #include <string>
+
 #include <istream>
+#include <ostream>
+#include <fstream>
+#include <ios>
+
 #include <cstring>
 #include <stdexcept>
 
@@ -39,31 +44,17 @@ struct PNM<pnm::monochrome_t>: private BitMatrix1D {
         BitMatrix1D::operator()(r, c, px.data);
     }
 
-    const PNM & write_file_content(const char *const file_name, bool use_ascii_fmt = 0) const {
-        return use_ascii_fmt ? write_ascii(file_name) : write_binary(file_name);
+    const PNM & write_content(std::ostream &os, bool use_ascii_fmt = 0) const {
+        return use_ascii_fmt ? write_ascii(os) : write_binary(os);
     }
 
-#if 0
-    // TODO: nell'aprire un file ascii sarà utile data la completamente diversa rappresentazione in memoria creare un nuovo file PNM quindi settare i pixel uno ad uno
-    //  mentre si parsa la pixmap in formato ascii, tecnicamente i commenti se non si cambia formato andrebbero mantenuti, quindi l'header da scrivere dovrebbe essere lo stesso
-    //  ricevuto in input tanto è già stato validato una volta che la pixmap arriva
-
-    // Load P4 pixmap directly into memory
-    PNM(uint16_t width, uint16_t height, const std::vector<uint8_t> &pixmap): BitMatrix1D{width, height} {
-
-        // "A raster of Height rows, in order from top to bottom. Each row is Width bits, packed 8 to a byte"
-        const uint16_t row_bytes = ceil_div(width, 8);
-        uint32_t expected_bsize = row_bytes * height;
-        if (pixmap.size() < expected_bsize)
-            throw std::runtime_error{"Invalid pixmap size, expected to be at least "s + std::to_string(expected_bsize) + " bytes found " + std::to_string(pixmap.size()) };
-
-        // copy the pixmap into memory
-        if (this->bsize() != expected_bsize)
-            throw std::runtime_error{"Fatal error"};
-
-        memcpy(this->unwrap(), (const void *)pixmap.data(), expected_bsize);
+    const PNM & write_file_content(const char *file_name, bool use_ascii_fmt = 0) const {
+        using std::ios_base;
+        std::ofstream fPPM;
+        fPPM.exceptions(ios_base::failbit|ios_base::badbit);
+        fPPM.open(file_name, ios_base::out|ios_base::binary|ios_base::trunc);
+        return write_content(fPPM, use_ascii_fmt);
     }
-#endif
 
 private:
     // this is used by parser() helper function, the reason is that gcc seems doesn't handle well copy-elision unless i write return PNM<..>{} directly
@@ -92,6 +83,6 @@ private:
 
 
 protected:
-        const PNM & write_ascii(const char *const file_name) const;
-        const PNM & write_binary(const char *const file_name) const;
+    const PNM & write_ascii(std::ostream &os) const;
+    const PNM & write_binary(std::ostream &os) const;
 };
