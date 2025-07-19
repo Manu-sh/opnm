@@ -10,7 +10,7 @@
 
 //#include <pnm/Header.hpp>
 
-std::string read_comment(std::istream &is) {
+static std::string read_comment(std::istream &is) {
 
     std::string comment;
     if (is.peek() != '#') return comment;
@@ -23,22 +23,22 @@ std::string read_comment(std::istream &is) {
     return comment;
 }
 
-void chomp_comments(std::istream &is) {
+static void chomp_comments(std::istream &is) {
     while (!read_comment(is).empty());
 }
 
-void chomp_whitespaces(std::istream &is) {
+static void chomp_whitespaces(std::istream &is) {
     while (is && std::isspace(is.peek()))
         is.get();
 }
 
-void chomp_comments_and_spaces(std::istream &is) {
+static void chomp_comments_and_spaces(std::istream &is) {
     for (int ch = is.peek(); ch == '#' || std::isspace(ch); ch = is.peek())
         chomp_whitespaces(is), chomp_comments(is);
 }
 
 
-std::optional<pnm::Format> magic_to_enum(char magic[2]) {
+static std::optional<pnm::Format> magic_to_enum(char magic[2]) {
 
     if (magic[0] != 'P') goto fail;
     switch (magic[1]) {
@@ -54,7 +54,7 @@ std::optional<pnm::Format> magic_to_enum(char magic[2]) {
     return std::nullopt;
 }
 
-pnm::Format parse_magic_section(std::istream &is) {
+static pnm::Format parse_magic_section(std::istream &is) {
 
     char format[2]{};
     if (!is.read(format, sizeof format))
@@ -66,7 +66,7 @@ pnm::Format parse_magic_section(std::istream &is) {
 }
 
 
-uint16_t parse_width_section(std::istream &is) {
+static uint16_t parse_width_section(std::istream &is) {
 
     uint16_t width;
     if (!(is >> width))
@@ -76,7 +76,7 @@ uint16_t parse_width_section(std::istream &is) {
 }
 
 
-uint16_t parse_height_section(std::istream &is) {
+static uint16_t parse_height_section(std::istream &is) {
 
     uint16_t height;
     if (!(is >> height))
@@ -86,7 +86,7 @@ uint16_t parse_height_section(std::istream &is) {
 }
 
 // PGM and PPM only
-uint16_t parse_maxvalue_section(std::istream &is) {
+static uint16_t parse_maxvalue_section(std::istream &is) {
 
     uint16_t maxvalue;
     if (!(is >> maxvalue) || !maxvalue) // "The maximum color value (Maxval). Must be less than 65536 and more than zero."
@@ -113,7 +113,7 @@ static std::vector<uint8_t> read_pixmap_blk(std::istream &is, uint32_t expected_
 }
 
 
-std::vector<uint8_t> parse_pbm4_raster_section(std::istream &is, uint16_t width, uint16_t height) {
+static std::vector<uint8_t> parse_pbm4_raster_section(std::istream &is, uint16_t width, uint16_t height) {
 
     if (!std::isspace(is.peek()))
         throw std::runtime_error{"Invalid format expected a single whitespace before the raster block begin"};
@@ -127,7 +127,7 @@ std::vector<uint8_t> parse_pbm4_raster_section(std::istream &is, uint16_t width,
     return read_pixmap_blk(is, expected_bsize);
 }
 
-std::vector<uint8_t> parse_pgm5_raster_section(std::istream &is, uint16_t width, uint16_t height) {
+static std::vector<uint8_t> parse_pgm5_raster_section(std::istream &is, uint16_t width, uint16_t height) {
 
     if (!std::isspace(is.peek()))
         throw std::runtime_error{"Invalid format expected a single whitespace before the raster block begin"};
@@ -142,7 +142,7 @@ std::vector<uint8_t> parse_pgm5_raster_section(std::istream &is, uint16_t width,
 }
 
 
-std::vector<uint8_t> parse_ppm6_raster_section(std::istream &is, uint16_t width, uint16_t height) {
+static std::vector<uint8_t> parse_ppm6_raster_section(std::istream &is, uint16_t width, uint16_t height) {
 
     if (!std::isspace(is.peek()))
         throw std::runtime_error{"Invalid format expected a single whitespace before the raster block begin"};
@@ -171,7 +171,7 @@ static std::vector<uint8_t> read_ascii_pixmap_values_as_bytes(std::istream &is, 
 
 
 
-std::vector<uint8_t> parse_pbm1_raster_section(std::istream &is, uint16_t width, uint16_t height) {
+static std::vector<uint8_t> parse_pbm1_raster_section(std::istream &is, uint16_t width, uint16_t height) {
 
     if (!std::isspace(is.peek()))
         throw std::runtime_error{"Invalid format expected a single whitespace before the raster block begin"};
@@ -181,7 +181,7 @@ std::vector<uint8_t> parse_pbm1_raster_section(std::istream &is, uint16_t width,
 }
 
 
-std::vector<uint8_t> parse_pgm2_raster_section(std::istream &is, uint16_t width, uint16_t height) {
+static std::vector<uint8_t> parse_pgm2_raster_section(std::istream &is, uint16_t width, uint16_t height) {
 
     if (!std::isspace(is.peek()))
         throw std::runtime_error{"Invalid format expected a single whitespace before the raster block begin"};
@@ -191,7 +191,7 @@ std::vector<uint8_t> parse_pgm2_raster_section(std::istream &is, uint16_t width,
 }
 
 
-std::vector<uint8_t> parse_ppm3_raster_section(std::istream &is, uint16_t width, uint16_t height) {
+static std::vector<uint8_t> parse_ppm3_raster_section(std::istream &is, uint16_t width, uint16_t height) {
 
     if (!std::isspace(is.peek()))
         throw std::runtime_error{"Invalid format expected a single whitespace before the raster block begin"};
