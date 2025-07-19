@@ -4,7 +4,7 @@
 This mini-library is for *__output only__*, actually there is no way to read a file from disk into a PNM format.
 
 #### Future (?)
-- add `PNM<T>(filename)` constructors or a factory method to read files from disk into a `PNM<T>` object
+- :white_check_mark: ~~add `PNM<T>(filename)` constructors or a factory method to read files from disk into a `PNM<T>` object~~
 - add `write_file_content(ostream&)`
 
 
