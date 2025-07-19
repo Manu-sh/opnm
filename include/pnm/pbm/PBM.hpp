@@ -81,6 +81,7 @@ private:
             for (int r = 0, ch; r < this->height(); r++) {
                 for (int c = 0; c < this->width(); c++) {
                     if (!(is >> ch)) throw std::runtime_error{"I/O error, missing or incomplete pixmap storing pixel pixmap[r="s + std::to_string(r) + "][c="  + std::to_string(c) + "]"s};
+                    if (ch != 0 && ch != 1) throw std::runtime_error{"Invalid pixmap value ("s + std::to_string(ch) + ") pixmap[r="s + std::to_string(r) + "][c="  + std::to_string(c) + "]"s};
                     this->operator()(r, c, ch);
                 }
             }
