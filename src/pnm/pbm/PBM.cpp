@@ -10,6 +10,10 @@
 #include <memory>
 #include <new>
 
+#include <string>
+#include <stdexcept>
+#include <istream>
+
 
 PNM<pnm::monochrome_t> PNM<pnm::monochrome_t>::parse(std::istream &is) {
 
@@ -135,4 +139,3 @@ const PNM<pnm::monochrome_t> & PNM<pnm::monochrome_t>::write_binary(const char *
     auto header = pnm::Header<pnm::Format::PBM4, pnm::BIT_2>{m_width, m_height};
     return ::write_file_content(file_name, header, beg, end), *this;
 }
-

@@ -7,6 +7,7 @@
 #include <pnm/pixels/rgb.hpp>
 #include <pnm/pixels/grayscale.hpp>
 
+
 template <typename Pixel> struct PNM;
 
 namespace pnm {

@@ -34,27 +34,27 @@ namespace pnm {
     template <const pnm::Format F, const uint8_t BIT_DEPTH>
     struct AbstractHeader {
 
-        protected:
-            AbstractHeader(uint16_t width, uint16_t height, std::string_view type)
-                    : m_type{type}, m_width{width}, m_height{height} {}
+    protected:
+        AbstractHeader(uint16_t width, uint16_t height, std::string_view type)
+                : m_type{type}, m_width{width}, m_height{height} {}
 
-        public:
-            operator std::string() {
-                using depth_t = typename ChannelDepth<BIT_DEPTH>::max_value; // for some reason Channel<BIT_DEPTH>max_value{} doesnt compile
-                std::ostringstream ss;
+    public:
+        operator std::string() {
+            using depth_t = typename ChannelDepth<BIT_DEPTH>::max_value; // for some reason Channel<BIT_DEPTH>max_value{} doesnt compile
+            std::ostringstream ss;
 
-                ss << this->m_type << '\n'                                                            // pnm type
-                   << std::to_string(this->m_width) << ' ' << std::to_string(this->m_height) << '\n'; // width x height
+            ss << this->m_type << '\n'                                                            // pnm type
+               << std::to_string(this->m_width) << ' ' << std::to_string(this->m_height) << '\n'; // width x height
 
-               if (std::string_view max_value = depth_t{}; max_value.length())
-                   ss << max_value << '\n';                                                           // MAX_VALUE, end of header, not needed for PBM
+            if (std::string_view max_value = depth_t{}; max_value.length())
+                ss << max_value << '\n';                                                           // MAX_VALUE, end of header, not needed for PBM
 
-                return ss.str();
-            }
+            return ss.str();
+        }
 
-        protected:
-            const std::string_view m_type;
-            const uint16_t m_width, m_height;
+    protected:
+        const std::string_view m_type;
+        const uint16_t m_width, m_height;
     };
 
     template <const pnm::Format, const uint8_t BIT_DEPTH> struct Header; // Forward Decl

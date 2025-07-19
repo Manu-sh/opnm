@@ -11,10 +11,11 @@
 
 class BitMatrix1D: public AbstractMatrix1D<BitArray8> {
 
-    // same of (int)ceil(x/8.)
-    static constexpr FORCED(inline) uint16_t ceil_div(uint16_t num, uint8_t div) {
-        return (num-1) / div + 1;
-    }
+    protected:
+        // same of (int)ceil(x/8.)
+        static constexpr FORCED(inline) uint16_t ceil_div(uint16_t num, uint8_t div) {
+            return (num-1) / div + 1;
+        }
 
     public:
         using allocator_type  = std::allocator<BitArray8>;

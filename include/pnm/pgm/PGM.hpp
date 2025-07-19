@@ -2,6 +2,8 @@
 #include <cstdint>
 #include <type_traits>
 #include <istream>
+#include <string>
+#include <stdexcept>
 
 #include <pnm/pnm.hpp>
 #include <pnm/pixels/grayscale.hpp>
@@ -42,41 +44,21 @@ struct PNM<pnm::grayscale<pnm::BIT_8>>: private StandardMatrix1D<pnm::grayscale<
         // this is used by parser() helper function, the reason is that gcc seems doesn't handle well copy-elision unless i write return PNM<..>{} directly
         PNM(uint16_t width, uint16_t height, std::istream &is, bool is_ascii): StandardMatrix1D{width, height} {
 
-            const auto &binary_parse = [this] (std::istream &is) { // Load P4 pixmap directly into memory
-
-                // "A raster of Height rows, in order from top to bottom. Each row is Width bits, packed 8 to a byte"
-                is.read((char*)this->unwrap(), this->bsize());
+            const auto &binary_load = [this] (std::istream &is) { // Load P5 pixmap directly into memory
+                is.read((char *)this->unwrap(), this->bsize());
                 if (uint32_t(is.gcount()) != this->bsize())
                     throw std::runtime_error{"Invalid pixmap size, expected to be at least "s + std::to_string(this->bsize()) + " bytes found " + std::to_string(is.gcount()) };
             };
 
-            /*
-            const auto &ascii_parse = [this] (std::istream &is) { // Load P1 data from a stream
-
+            const auto &ascii_load = [this] (std::istream &is) { // Load P2 data from a stream
                 for (int r = 0; r < this->height(); r++) {
-                    for (int c = 0; c < this->width(); c++) {
-                        uint8_t buf[3];
-                        for (int i = 0; i < 3; ++i)
-                            if (!(is >> buf[i])) throw std::runtime_error{"I/O error, missing or incomplete pixmap storing pixel pixmap[r="s + std::to_string(r) + "][c="  + std::to_string(c) + "]"s};
-                        this->operator()(r, c) = {buf[0], buf[1], buf[2]};
-                    }
-                }
-            };*/
-
-
-            // TODO: 
-            const auto &ascii_parse = [this] (std::istream &is) { // Load P1 data from a stream
-
-                for (int r = 0; r < this->height(); r++) {
-                    for (int c = 0; c < this->width(); c++) {
-                        uint8_t ch;
-                        if (!(is >> ch)) throw std::runtime_error{"I/O error, missing or incomplete pixmap storing pixel pixmap[r="s + std::to_string(r) + "][c="  + std::to_string(c) + "]"s};
-                        this->operator()(r, c).data = ch;
-                    }
+                    for (int c = 0; c < this->width(); c++)
+                        if (!(is >> this[0](r, c).data))
+                            throw std::runtime_error{"I/O error, missing or incomplete pixmap storing pixel pixmap[r="s + std::to_string(r) + "][c="  + std::to_string(c) + "]"s};
                 }
             };
 
-            is_ascii ? ascii_parse(is) : binary_parse(is);
+            is_ascii ? ascii_load(is) : binary_load(is);
         }
 
     protected:

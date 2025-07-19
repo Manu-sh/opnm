@@ -11,6 +11,9 @@
 #include <memory>
 #include <new>
 
+#include <string>
+#include <stdexcept>
+#include <istream>
 
 
 PNM<pnm::grayscale<pnm::BIT_8>> PNM<pnm::grayscale<pnm::BIT_8>>::parse(std::istream &is) {
@@ -92,4 +95,3 @@ const PNM<pnm::grayscale<pnm::BIT_8>> & PNM<pnm::grayscale<pnm::BIT_8>>::write_b
     auto header = pnm::Header<pnm::Format::PGM5, pnm::BIT_8>{m_width, m_height};
     return ::write_file_content(file_name, header, beg, end), *this;
 }
-
