@@ -46,11 +46,11 @@ struct PNM<pnm::grayscale<pnm::BIT_8>>: private StandardMatrix1D<pnm::grayscale<
 
                 // "A raster of Height rows, in order from top to bottom. Each row is Width bits, packed 8 to a byte"
                 is.read((char*)this->unwrap(), this->bsize());
-
                 if (uint32_t(is.gcount()) != this->bsize())
                     throw std::runtime_error{"Invalid pixmap size, expected to be at least "s + std::to_string(this->bsize()) + " bytes found " + std::to_string(is.gcount()) };
             };
 
+            /*
             const auto &ascii_parse = [this] (std::istream &is) { // Load P1 data from a stream
 
                 for (int r = 0; r < this->height(); r++) {
@@ -59,6 +59,19 @@ struct PNM<pnm::grayscale<pnm::BIT_8>>: private StandardMatrix1D<pnm::grayscale<
                         for (int i = 0; i < 3; ++i)
                             if (!(is >> buf[i])) throw std::runtime_error{"I/O error, missing or incomplete pixmap storing pixel pixmap[r="s + std::to_string(r) + "][c="  + std::to_string(c) + "]"s};
                         this->operator()(r, c) = {buf[0], buf[1], buf[2]};
+                    }
+                }
+            };*/
+
+
+            // TODO: 
+            const auto &ascii_parse = [this] (std::istream &is) { // Load P1 data from a stream
+
+                for (int r = 0; r < this->height(); r++) {
+                    for (int c = 0; c < this->width(); c++) {
+                        uint8_t ch;
+                        if (!(is >> ch)) throw std::runtime_error{"I/O error, missing or incomplete pixmap storing pixel pixmap[r="s + std::to_string(r) + "][c="  + std::to_string(c) + "]"s};
+                        this->operator()(r, c).data = ch;
                     }
                 }
             };
