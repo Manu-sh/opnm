@@ -56,7 +56,9 @@ struct PNM<pnm::rgb<pnm::BIT_8>>: private StandardMatrix1D<pnm::rgb<pnm::BIT_8>>
                     for (int c = 0; c < this->width(); c++) {
                         uint8_t *rgb = (uint8_t *)&this[0](r, c); // pointer to rgb triple (3 byte)
                         for (uint8_t i = 0; i < sizeof(RGB); ++i) {
-                            if (!(is >> rgb[i])) throw std::runtime_error{"I/O error, missing or incomplete pixmap storing pixel pixmap[r="s + std::to_string(r) + "][c=" + std::to_string(c) + "]"s};
+                            uint16_t px; // there are issues reading directly into a uint8_t
+                            if (!(is >> px)) throw std::runtime_error{"I/O error, missing or incomplete pixmap storing pixel pixmap[r="s + std::to_string(r) + "][c=" + std::to_string(c) + "]"s};
+                            rgb[i] = (uint8_t)px;
                         }
                     }
                 }

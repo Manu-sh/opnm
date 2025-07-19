@@ -52,9 +52,11 @@ struct PNM<pnm::grayscale<pnm::BIT_8>>: private StandardMatrix1D<pnm::grayscale<
 
             const auto &ascii_load = [this] (std::istream &is) { // Load P2 data from a stream
                 for (int r = 0; r < this->height(); r++) {
-                    for (int c = 0; c < this->width(); c++)
-                        if (!(is >> this[0](r, c).data))
-                            throw std::runtime_error{"I/O error, missing or incomplete pixmap storing pixel pixmap[r="s + std::to_string(r) + "][c="  + std::to_string(c) + "]"s};
+                    for (int c = 0; c < this->width(); c++) {
+                        uint16_t px; // there are issues reading directly into a uint8_t
+                        if (!(is >> px)) throw std::runtime_error{"I/O error, missing or incomplete pixmap storing pixel pixmap[r="s + std::to_string(r) + "][c=" + std::to_string(c) + "]"s};
+                        this[0](r, c).data = (uint8_t)px;
+                    }
                 }
             };
 
