@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdint>
+#include <cassert>
 
 struct __attribute__((__packed__)) BitArray8 {
 
