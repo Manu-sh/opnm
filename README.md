@@ -25,6 +25,8 @@ Learning resources
 - https://netpbm.sourceforge.net/doc/ppm.html
 
 ```cpp
+
+// chessboard pattern
 PNM<pnm::monochrome_t> chessboard{1920, 1080};
 bool color = pnm::monochrome_t::BLACK;
 
@@ -33,7 +35,16 @@ for (int h = 0; h < chessboard.height(); ++h, color = !color)
         chessboard(h, w, color);
 
 chessboard.write_file_content("chessboard-bin.pbm");
-chessboard.write_file_content("chessboard-ascii.pbm", 1);
+
+{ // read the file again from disk but this time save as ascii file
+    bool use_asci_fmt = 1;
+    auto is = ifstream_open("chessboard-bin.pbm");
+
+    // you can parse any TPixel (pnm::monochrome_t, pnm::rgb<pnm::BIT_8>, pnm::grayscale<pnm::BIT_8>)
+    auto image = PNM<pnm::monochrome_t>::parse(is);
+    image.write_file_content("chessboard-ascii.pbm", use_asci_fmt);
+}
+
 
 PNM<pnm::monochrome_t> pbm{3, 2};
 
@@ -50,7 +61,7 @@ pbm.write_file_content("ascii.pbm", 1);
 
 PNM<pnm::rgb<pnm::BIT_8>> ppm{3, 2};
 
-ppm(0,0) = {255, 0,   0};
+ppm(0,0) = {255, 0,   0};  // here you can assign since a reference to an addressable pixel (>= 1 byte) is returned
 ppm(0,1) = {0,   255, 0};
 ppm(0,2) = {0,   0,   255};
 
