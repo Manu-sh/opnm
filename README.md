@@ -25,7 +25,6 @@ Learning resources
 - https://netpbm.sourceforge.net/doc/ppm.html
 
 ```cpp
-
 // chessboard pattern
 PNM<pnm::monochrome_t> chessboard{1920, 1080};
 bool color = pnm::monochrome_t::BLACK;
@@ -37,6 +36,15 @@ for (int h = 0; h < chessboard.height(); ++h, color = !color)
 chessboard.write_file_content("chessboard-bin.pbm");
 
 { // read the file again from disk but this time save as ascii file
+    static const auto &ifstream_open = [](const char *filename) -> std::ifstream {
+        using std::literals::string_literals::operator""s, std::ios_base;
+        std::ifstream fpnm;
+        fpnm.exceptions(ios_base::badbit);
+        fpnm.open(filename, ios_base::in|ios_base::binary);
+        if (!fpnm) throw std::invalid_argument{"Unable to open file: "s + filename};
+        return fpnm;
+    };
+
     bool use_asci_fmt = 1;
     auto is = ifstream_open("chessboard-bin.pbm");
 
