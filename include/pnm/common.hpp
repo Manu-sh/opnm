@@ -9,7 +9,7 @@
     #error "FORCED() macro already defined"
 #endif
 
-#define FORCED(_UNUSED_) __attribute__((always_inline))
+#define FORCED(_UNUSED_) inline __attribute__((always_inline))
 
 
 // ceil_div(x, 8) -> same of (int)ceil(x/8.)
