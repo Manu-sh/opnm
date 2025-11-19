@@ -6,7 +6,7 @@
 
 namespace pnm {
 
-    struct __attribute__((__packed__)) monochrome_t: grayscale<BIT_8> {
+    struct __attribute__((packed)) monochrome_t: grayscale<BIT_8> {
 
         enum: uint8_t { WHITE, BLACK }; // PBM use 0 for white and 1 for black
 
