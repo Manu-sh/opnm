@@ -7,7 +7,7 @@ namespace pnm {
     template <const uint8_t BIT_DEPTH> struct rgb;
 
     template <>
-    struct __attribute__((__packed__)) rgb<BIT_8> {
+    struct __attribute__((packed)) rgb<BIT_8> {
         uint8_t r;
         uint8_t g;
         uint8_t b;
