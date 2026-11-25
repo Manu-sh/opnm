@@ -30,6 +30,7 @@ target_include_directories(${PROJECT_NAME} PRIVATE ${INC_PRIVATE_PATH}) # TODO m
 
 target_compile_options(${PROJECT_NAME}
     PRIVATE
+        -std=c++17
         -pedantic
         -Wall -Wextra -Wno-unused-function -pipe
         -fstack-protector-all -fstack-protector-strong
